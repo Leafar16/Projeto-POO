@@ -1,73 +1,21 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class Amador extends Utilizador {
-    private int altura;
-    private double peso;
-    private List<Atividade> atividades;
-    private double factorCalorias;
+public class Amador extends Utilizador implements Serializable {
 
     public Amador() {
         super();
-        this.altura = 0;
-        this.peso = 0.0;
-        this.atividades = new ArrayList<>();
-        this.factorCalorias = 0.0;
     }
 
-    public Amador(String codigo, String nome, String morada, String email, int freqCardiaca, int altura, double peso,
-                  List<Atividade> atividades, double factorCalorias) {
-        super(codigo, nome, morada, email, freqCardiaca);
-        this.altura = altura;
-        this.peso = peso;
-        setAtividades(atividades);
-        this.factorCalorias = factorCalorias;
+    public Amador(String codigo, String nome, String morada, String email, int altura, double peso) {
+        super(codigo, nome, morada, email, altura, peso);
     }
 
     public Amador(Amador amador) {
         super(amador);
-        this.altura = amador.getAltura();
-        this.peso = amador.getPeso();
-        this.atividades = amador.getAtividades();
-        this.factorCalorias = amador.getFactorCalorias();
-    }
-
-    public int getAltura() {
-        return this.altura;
-    }
-
-    public void setAltura(int altura) {
-        this.altura = altura;
-    }
-
-    public double getPeso() {
-        return this.peso;
-    }
-
-    public void setPeso(double peso) {
-        this.peso = peso;
-    }
-
-    public List<Atividade> getAtividades() {
-        return this.atividades.stream().map(Atividade::clone)
-                .collect(Collectors.toList());
-    }
-
-    public void setAtividades(List<Atividade> atividades) {
-        this.atividades = new ArrayList<>();
-        for (Atividade at : atividades) {
-            this.atividades.add(at.clone());
-        }
-    }
-
-    public double getFactorCalorias() {
-        return this.factorCalorias;
-    }
-
-    public void setFactorCalorias(double factorCalorias) {
-        this.factorCalorias = factorCalorias;
     }
 
     // Clone method
@@ -75,28 +23,28 @@ public class Amador extends Utilizador {
         return new Amador(this);
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        if (!super.equals(obj)) return false;
-        Amador amador = (Amador) obj;
-        return amador.getAltura() == this.altura &&
-                amador.getPeso() == this.peso &&
-                this.atividades.equals(amador.getAtividades()) &&
-                amador.getFactorCalorias() == this.factorCalorias;
-    }
-
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), altura, peso, atividades, factorCalorias);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Amador amador = (Amador) o;
+        return (super.equals(amador));
     }
 
     public String toString() {
         StringBuilder sb = new StringBuilder("Amador\n");
-        sb.append(super.toString());
-        sb.append("Altura: '").append(this.altura).append("'\n");
-        sb.append("Peso: '").append(this.peso).append("'\n");
-        sb.append("Atividades: ").append(this.atividades.toString()).append("\n");
-        sb.append("Factor calórico: '").append(this.factorCalorias).append("'\n");
+        sb.append("Código: '").append(this.getCodigo()).append("'\n");
+        sb.append("Nome: '").append(this.getNome()).append("'\n");
+        sb.append("Morada: '").append(this.getMorada()).append("'\n");
+        sb.append("E-mail: '").append(this.getEmail()).append("'\n");
+        sb.append("Frequência cardíaca média: '").append(this.getFreqCardiaca()).append("'\n");
+        sb.append("Altura: '").append(this.getAltura()).append(" cm'\n");
+        sb.append("Peso: '").append(this.getPeso()).append(" kg'\n");
+        sb.append("Atividades: ").append(this.getAtividades().toString()).append("\n");
+        sb.append("Factor calórico: '").append(this.getFactorCalorias()).append("'\n");
         return sb.toString();
+    }
+
+    public double calculaFactorCalorias() {
+        return (this.getAltura() * 0.015 + this.getPeso() * 0.02);
     }
 }

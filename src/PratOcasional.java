@@ -1,88 +1,49 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class PratOcasional extends Utilizador {
-    private int vezesSemana;
-    private List<Atividade> atividades;
-    private double factorCalorias;
+public class PratOcasional extends Utilizador implements Serializable {
 
     public PratOcasional() {
         super();
-        this.vezesSemana = 0;
-        this.atividades = new ArrayList<>();
-        this.factorCalorias = 0.0;
     }
 
-    public PratOcasional(String codigo, String nome, String morada, String email, int freqCardiaca,
-                         int vezesSemana, List<Atividade> atividades, double factorCalorias) {
-        super(codigo, nome, morada, email, freqCardiaca);
-        this.vezesSemana = vezesSemana;
-        setAtividades(atividades);
-        this.factorCalorias = factorCalorias;
+    public PratOcasional(String codigo, String nome, String morada, String email, int altura, double peso) {
+        super(codigo, nome, morada, email, altura, peso);
     }
 
     public PratOcasional(PratOcasional pratOcasional) {
         super(pratOcasional);
-        this.vezesSemana = pratOcasional.getVezesSemana();
-        this.atividades = pratOcasional.getAtividades();
-        this.factorCalorias = pratOcasional.getFactorCalorias();
     }
 
-    public int getVezesSemana() {
-        return this.vezesSemana;
-    }
-
-    public void setVezesSemana(int vezesSemana) {
-        this.vezesSemana = vezesSemana;
-    }
-
-    public List<Atividade> getAtividades() {
-        return this.atividades.stream().map(Atividade::clone)
-                .collect(Collectors.toList());
-    }
-
-    public void setAtividades(List<Atividade> atividades) {
-        this.atividades = new ArrayList<>();
-        for (Atividade at : atividades) {
-            this.atividades.add(at.clone());
-        }
-    }
-
-    public double getFactorCalorias() {
-        return this.factorCalorias;
-    }
-
-    public void setFactorCalorias(double factorCalorias) {
-        this.factorCalorias = factorCalorias;
-    }
-
-    // Clone method
     public PratOcasional clone() {
         return new PratOcasional(this);
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        if (!super.equals(obj)) return false;
-        PratOcasional pratOcasional = (PratOcasional) obj;
-        return pratOcasional.getVezesSemana() == this.vezesSemana &&
-                this.atividades.equals(pratOcasional.getAtividades()) &&
-                pratOcasional.getFactorCalorias() == this.factorCalorias;
-    }
-
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), vezesSemana, atividades, factorCalorias);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PratOcasional prat = (PratOcasional) o;
+        return (super.equals(prat));
     }
 
     public String toString() {
-        StringBuilder sb = new StringBuilder("PratOcasional\n");
-        sb.append(super.toString());
-        sb.append("Vezes por semana: '").append(this.vezesSemana).append("'\n");
-        sb.append("Atividades: ").append(this.atividades.toString()).append("\n");
-        sb.append("Factor calórico: '").append(this.factorCalorias).append("'\n");
+        StringBuilder sb = new StringBuilder("Praticante Ocasional\n");
+        sb.append("Código: '").append(this.getCodigo()).append("'\n");
+        sb.append("Nome: '").append(this.getNome()).append("'\n");
+        sb.append("Morada: '").append(this.getMorada()).append("'\n");
+        sb.append("E-mail: '").append(this.getEmail()).append("'\n");
+        sb.append("Frequência cardíaca média: '").append(this.getFreqCardiaca()).append("'\n");
+        sb.append("Altura: '").append(this.getAltura()).append(" cm'\n");
+        sb.append("Peso: '").append(this.getPeso()).append(" kg'\n");
+        sb.append("Atividades: ").append(this.getAtividades().toString()).append("\n");
+        sb.append("Factor calórico: '").append(this.getFactorCalorias()).append("'\n");
         return sb.toString();
+    }
+
+    public double calculaFactorCalorias() {
+        return (this.getAltura() * 0.005 + this.getPeso() * 0.01);
     }
 }

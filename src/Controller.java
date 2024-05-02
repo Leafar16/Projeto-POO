@@ -1,4 +1,5 @@
-import java.util.AbstractMap;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class Controller {
     public static void run() {
@@ -18,41 +19,35 @@ public class Controller {
                     if(!trazAqui.login(codigo)) Menu.errors(16);
                     else{
                         Menu.clearWindow();
-                        TipoUtilizador tc = trazAqui.getTipoConta();
-                        if (tc.equals(TipoUtilizador.Profissional)) ControllerProfissional.run(trazAqui);
-                        else if (tc.equals(TipoUtilizador.Amador)) ControllerAmador.run(trazAqui);
-                        else ControllerPratOcasional.run(trazAqui);
+                        ControllerUtilizador.run(trazAqui);
                     }
                     break;
 
                 case 2:
 
-                    TipoUtilizador tipoUtilizador = null;
-                    while (tipoUtilizador == null) tipoUtilizador = Menu.menuRegisto();
+                    String tipoUtilizador = null;
+                    while (tipoUtilizador == null) tipoUtilizador = Menu.menuTipoUtilizador();
 
                     Utilizador utilizador;
 
-                    if (tipoUtilizador.equals(TipoUtilizador.Profissional)) utilizador = Menu.menuRegistoProfissional(trazAqui.getNewCodeUser(TipoUtilizador.Profissional));
-                    else if (tipoUtilizador.equals(TipoUtilizador.Amador)) utilizador = Menu.menuRegistoAmador(trazAqui.getNewCodeUser(TipoUtilizador.Amador));
-                    else utilizador = Menu.menuRegistoPratOcasional(trazAqui.getNewCodeUser(TipoUtilizador.PratOcasional));
+                    utilizador = Menu.menuRegistoUtilizador(trazAqui.getNewCodeUser(tipoUtilizador), tipoUtilizador);
 
                     if (!trazAqui.freeEmail(utilizador.getEmail())) Menu.errors(18);
 
                     else{
+
                         trazAqui.registoUser(utilizador);
 
                         System.out.println("Utilizador registered successfully:");
                         System.out.println(utilizador);
 
-                        if (tipoUtilizador.equals(TipoUtilizador.Profissional)) ControllerProfissional.run(trazAqui);
-                        else if (tipoUtilizador.equals(TipoUtilizador.Amador)) ControllerAmador.run(trazAqui);
-                        else ControllerPratOcasional.run(trazAqui);
+                        ControllerUtilizador.run(trazAqui);
                     }
 
                     break;
 
                 case 3:
-
+                    /*
                     TipoAtividade tipoAtividade = null;
                     while (tipoAtividade == null) tipoAtividade = Menu.menuTipoAtividade();
 
@@ -64,14 +59,33 @@ public class Controller {
                     else atividade = Menu.menuRegistoPesos(trazAqui.getNewCodeAt(TipoAtividade.Pesos));
 
                     trazAqui.registoAtividade(atividade);
+                     */
                     break;
 
                 case 4:
-                    System.exit(0);
+                    try {
+                        trazAqui.guardaEstadoObj("Estado.obj");
+                        System.out.println("Estado guardado com sucesso.\n");
+                    } catch (FileNotFoundException e) {
+                        System.out.println("*Ficheiro não encontrado.*\n");
+                    } catch (IOException e) {
+                        System.out.println("*Não foi possível guardar o estado*\n");
+                    }
+                    Menu.pressEnter();
                     break;
 
                 case 5:
-                    System.exit(0);
+                    try {
+                        trazAqui.carregaEstadoObj("Estado.obj");
+                        System.out.println("Estado carregado com sucesso.\n");
+                    } catch (FileNotFoundException e) {
+                        System.out.println("*Ficheiro não encontrado.*\n");
+                    } catch (IOException e) {
+                        System.out.println("*Não foi possível carregar o estado.*\n");
+                    } catch (ClassNotFoundException e) {
+                        System.out.println("*Erro ao carregar os objetos para a estrutura de dados*\n");
+                    }
+                    Menu.pressEnter();
                     break;
 
                 case 6:

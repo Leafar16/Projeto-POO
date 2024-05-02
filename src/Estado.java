@@ -1,4 +1,4 @@
-import java.io.Serializable;
+import java.io.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,47 +7,54 @@ public class Estado implements Serializable {
     private Utilizadores profissionais;
     private Utilizadores amadores;
     private Utilizadores pratocasionais;
-    private Atividades distalt;
-    private Atividades dist;
-    private Atividades reps;
-    private Atividades pesos;
+
+    // private Atividades distalt;
+
+    // private Atividades dist;
+
+    // private Atividades reps;
+
+    // private Atividades pesos;
+    private Atividades atividades;
 
     public Estado() {
         this.profissionais = new Utilizadores();
         this.amadores = new Utilizadores();
         this.pratocasionais = new Utilizadores();
+        /*
         this.distalt = new Atividades();
         this.dist = new Atividades();
         this.reps = new Atividades();
         this.pesos = new Atividades();
+         */
+        this.atividades = new Atividades();
     }
 
     public Estado(Estado outro) {
         this.profissionais = outro.profissionais;
         this.amadores = outro.amadores;
         this.pratocasionais = outro.pratocasionais;
+        /*
         this.distalt = outro.distalt;
         this.dist = outro.dist;
         this.reps = outro.reps;
         this.pesos = outro.pesos;
+         */
+        this.atividades = outro.atividades;
     }
 
     public boolean existeEmail(String s) {
         return this.profissionais.existeEmail(s) || this.amadores.existeEmail(s)
                 || this.pratocasionais.existeEmail(s);
     }
-    public String newCodeUser(TipoUtilizador tipoUtilizador) {
-        if (tipoUtilizador.equals(TipoUtilizador.Profissional)) return ("P"+this.profissionais.newCodeNumber());
-        else if (tipoUtilizador.equals(TipoUtilizador.Amador)) return ("A"+this.amadores.newCodeNumber());
-        else return ("O"+this.pratocasionais.newCodeNumber());
+    public String newCodeUser(String tipoUtilizador) {
+        if (tipoUtilizador.equals("Profissional")) return ("P"+this.profissionais.newCodeNumber());
+        else if (tipoUtilizador.equals("Amador")) return ("A"+this.amadores.newCodeNumber());
+        else return ("PO"+this.pratocasionais.newCodeNumber());
     }
 
-    public String newCodeAt(TipoAtividade tipoAtividade) {
-        if (tipoAtividade.equals(TipoAtividade.DistAlt)) return ("DA"+this.distalt.newCodeNumberAt());
-        else if (tipoAtividade.equals(TipoAtividade.Dist)) return ("D"+this.dist.newCodeNumberAt());
-        else if (tipoAtividade.equals(TipoAtividade.Reps)) return ("R"+this.reps.newCodeNumberAt());
-        else return ("P"+this.pesos.newCodeNumberAt());
-
+    public String newCodeAt() {
+        return ("A"+this.atividades.newCodeNumberAt());
     }
 
     public boolean freeEmail(String email){
@@ -75,13 +82,20 @@ public class Estado implements Serializable {
         else this.pratocasionais.addUtilizador(utilizador);
     }
 
+
     public void addAtividade(Atividade atividade) {
-        if (atividade instanceof DistAlt) this.distalt.addAtividade(atividade);
-        else if (atividade instanceof Dist) this.dist.addAtividade(atividade);
-        else if (atividade instanceof Reps) this.reps.addAtividade(atividade);
-        else this.pesos.addAtividade(atividade);
+        this.atividades.addAtividade(atividade);
     }
 
+    public void updateUser(Utilizador user, String tipoUtilizador) {
+        switch (tipoUtilizador) {
+            case ("Profissional"):
+                this.profissionais.updateUtilizador(user);
+            default: return;
+        }
+    }
+
+    /*
     public Map<String, String> showAtividades(TipoAtividade tipoAtividade) {
         Map<String, String> atividadesMap = new HashMap<>();
         Map<String, Atividade> atividades;
@@ -112,6 +126,9 @@ public class Estado implements Serializable {
         return atividadesMap;
     }
 
+     */
+
+    /*
     public Atividade getAtividadefromCode(String codigo, TipoAtividade ta) {
         Atividade a;
         switch (ta) {
@@ -134,6 +151,8 @@ public class Estado implements Serializable {
         return a;
     }
 
+
+
     public boolean atCodeValid(String cod, TipoAtividade ta) {
         switch (ta) {
             case DistAlt:
@@ -150,8 +169,37 @@ public class Estado implements Serializable {
 
     }
 
+         */
+
     public Estado clone() {
         return new Estado(this);
+    }
+
+    public void guardaEstado(String ficheiro) throws IOException {
+        try {
+            FileOutputStream fos = new FileOutputStream(ficheiro);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(this);
+            oos.flush();
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace(); // Or handle the exception appropriately
+        }
+    }
+
+    public void carregaEstado(String ficheiro) throws IOException, ClassNotFoundException {
+        Estado e = carregaEstadoAux(ficheiro);
+        this.profissionais = e.profissionais;
+        this.amadores = e.amadores;
+        this.pratocasionais = e.pratocasionais;
+        this.atividades = e.atividades;
+    }
+    public static Estado carregaEstadoAux(String ficheiro) throws IOException, ClassNotFoundException {
+        FileInputStream fis = new FileInputStream(ficheiro);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        Estado e = (Estado) ois.readObject();
+        ois.close();
+        return e;
     }
 
 }

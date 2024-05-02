@@ -56,6 +56,14 @@ public class Utilizadores implements Serializable {
         return null;
     }
 
+    public void updateUtilizador(Utilizador user) {
+        String code = user.getCodigo();
+        if (this.mapUtilizadores.containsKey(code)) {
+            this.mapUtilizadores.put(code, user.clone());
+        }
+    }
+
+
     public boolean existeEmail(String s){
         return this.mapUtilizadores.entrySet().stream().anyMatch(a->s.equals(a.getValue().getEmail()));
     }

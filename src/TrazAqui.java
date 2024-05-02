@@ -1,16 +1,17 @@
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TrazAqui implements Serializable {
     private Utilizador utilizadorLoggedIn;
-    private Atividade atividadeAdicionar;
     private Estado estado;
 
     public TrazAqui() {
         this.estado = new Estado();
         this.utilizadorLoggedIn = null;
-        this.atividadeAdicionar = null;
     }
 
     public boolean login(String codigo) {
@@ -36,26 +37,23 @@ public class TrazAqui implements Serializable {
 
     public void registoAtividade(Atividade atividade) {
         this.estado.addAtividade(atividade);
-        // this.atividadeAdicionar = atividade.clone();
     }
 
     public String getCodLoggedIn() {
         return this.utilizadorLoggedIn.getCodigo();
     }
 
-    public TipoUtilizador getTipoConta() {
-        if (this.utilizadorLoggedIn instanceof Profissional) return TipoUtilizador.Profissional;
-        else if (this.utilizadorLoggedIn instanceof Amador) return TipoUtilizador.Amador;
-        else return TipoUtilizador.PratOcasional;
+    public double getFCUser() {
+        return this.utilizadorLoggedIn.getFreqCardiaca();
     }
 
-    public TipoAtividade getTipoAtividade() {
-        if (this.atividadeAdicionar instanceof DistAlt) return TipoAtividade.DistAlt;
-        else if (this.atividadeAdicionar instanceof Dist) return TipoAtividade.Dist;
-        else if (this.atividadeAdicionar instanceof Reps) return TipoAtividade.Reps;
-        else return TipoAtividade.Pesos;
+    // alterar utilizadorLoggedIn para user
+    public String getTipoConta(Utilizador user) {
+        if (this.utilizadorLoggedIn instanceof Profissional) return "Profissional";
+        else if (this.utilizadorLoggedIn instanceof Amador) return "Amador";
+        else return "PratOcasional";
     }
-
+    /*
     public Map<String,String> AtInfo (TipoAtividade ta) {
         return new HashMap<>(this.estado.showAtividades(ta));
     }
@@ -63,17 +61,23 @@ public class TrazAqui implements Serializable {
     public Atividade AtAdd (String codigo, TipoAtividade ta) {
         return new Atividade(this.estado.getAtividadefromCode(codigo,ta));
     }
+     */
+    public Atividade addAtividadeUtilizador(Atividade atividade) {
+        Utilizador user = utilizadorLoggedIn;
+        Atividade add = atividade;
+        // modifica o parâmetro das calorias na atividade de acordo com o FC do user
+        add.setCalorias(add.calculaCalorias(user.getFactorCalorias()));
 
-    public Atividade addAtividadePro(Atividade atividade, TipoAtividade ta) {
-        Profissional profissional = (Profissional) utilizadorLoggedIn;
-        Atividade a;
-        if (profissional != null) {
-            a = profissional.addAtividade(atividade, ta);
+        if (user != null) {
+                user.updateFreqCardiaca(add.getFreqCardiaca());
+                user.addAtividade(add);
+                this.estado.updateUser(user, getTipoConta(user));
+
         } else {
             return null;
         }
 
-        return a;
+        return add;
     }
 
 
@@ -81,16 +85,38 @@ public class TrazAqui implements Serializable {
         return this.estado.existeEmail(s);
     }
 
-    public boolean isValidCodeAt(String at, TipoAtividade tipo) {
+    /* public boolean isValidCodeAt(String at, TipoAtividade tipo) {
         return this.estado.atCodeValid(at, tipo);
     }
 
-    public String getNewCodeUser(TipoUtilizador t) {
+     */
+
+    public String getUserAtividades() {
+        Utilizador user = utilizadorLoggedIn;
+        String ats;
+        if (user != null) {
+            ats = user.getAtividades().toString();
+        } else {
+            return null;
+        }
+
+        return ats;
+    }
+
+    public String getNewCodeUser(String t) {
         return estado.newCodeUser(t);
     }
 
-    public String getNewCodeAt(TipoAtividade at) {
-        return estado.newCodeAt(at);
+    public String getNewCodeAt() {
+        return estado.newCodeAt();
+    }
+
+    public void guardaEstadoObj(String ficheiro) throws IOException {
+        this.estado.guardaEstado(ficheiro);
+    }
+
+    public void carregaEstadoObj(String ficheiro) throws IOException, ClassNotFoundException {
+        this.estado.carregaEstado(ficheiro);
     }
 
 }
